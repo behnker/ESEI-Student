@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESEI Barcelona | Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Clean off-white */
+            background-image: radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+            min-height: 100vh;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .purple-glow {
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.1);
+        }
+
+        .fuchsia-gradient {
+            background: linear-gradient(90deg, #A855F7 0%, #EC4899 100%);
+        }
+
+        .text-gradient {
+            background: linear-gradient(90deg, #6b21a8 0%, #db2777 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+        .pathway-node::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #A855F7, #EC4899);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .tutor-ring {
+            position: relative;
+        }
+        .tutor-ring::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid #EC4899;
+            opacity: 0.3;
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="p-0 md:p-6 lg:p-10">
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl transition-all duration-500">
+        <div class="glass p-10 w-full max-w-md mx-4 purple-glow">
+            <div class="text-center mb-8">
+                <!-- Branding using darker ESEI version for visibility on white -->
+                <img src="https://eseibusinessschool.com/wp-content/uploads/2021/04/Logo-ESEI-Barcelona.png" alt="ESEI" class="h-12 mx-auto mb-6">
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Student Portal</h2>
+                <p class="text-slate-500">Enter your TalentLMS credentials</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                    <input type="email" id="email" value="testuser1@gmail.com" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                    <input type="password" id="password" value="********" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all">
+                </div>
+                <button onclick="handleLogin()" class="w-full fuchsia-gradient hover:opacity-90 text-white font-bold py-4 rounded-xl shadow-lg shadow-fuchsia-500/20 transition-all transform active:scale-95">
+                    Access Campus
+                </button>
+                <p class="text-center text-xs text-slate-400 mt-4">Authorized ESEI Students Only</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="main-content" class="hidden max-w-7xl mx-auto space-y-8 pb-20">
+        
+        <!-- Navbar -->
+        <nav class="flex items-center justify-between mb-12">
+            <div class="flex items-center gap-4">
+                <div class="p-2 glass rounded-2xl shadow-sm">
+                    <img src="https://eseibusinessschool.com/wp-content/uploads/2021/04/Logo-ESEI-Barcelona.png" alt="ESEI" class="h-8">
+                </div>
+                <div>
+                    <span class="block text-xs uppercase tracking-widest text-slate-400 font-bold">Academic Year 2026</span>
+                    <span class="text-xl font-bold tracking-tight text-slate-900">Student Hub</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex gap-4">
+                    <button onclick="showSection('dashboard')" class="text-sm font-semibold px-4 py-2 rounded-full hover:bg-slate-100 transition-all text-slate-600">Dashboard</button>
+                    <button onclick="showSection('grading')" class="text-sm font-semibold px-4 py-2 rounded-full hover:bg-slate-100 transition-all text-slate-600">Grading</button>
+                </div>
+                <div class="flex items-center gap-3 glass px-4 py-2 shadow-sm">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-slate-900" id="user-name">Zeynep Öztürkmen</p>
+                        <p class="text-[10px] text-fuchsia-600 font-bold uppercase">Masters Student</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full fuchsia-gradient border-2 border-white flex items-center justify-center font-bold text-white">
+                        ZÖ
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard-section" class="space-y-10">
+            
+            <!-- Hero & AI Tutor -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="glass p-8 relative overflow-hidden purple-glow">
+                        <div class="relative z-10">
+                            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-slate-900">Welcome back, <span class="text-gradient">Zeynep!</span></h1>
+                            <p class="text-slate-600 text-lg max-w-xl">You have completed <span class="text-fuchsia-600 font-bold">84%</span> of your <span class="italic">Digital Marketing Strategy</span> course. Just one final assessment to go!</p>
+                            
+                            <div class="mt-8 flex flex-wrap gap-4">
+                                <div class="glass-card px-6 py-4 flex items-center gap-4 bg-white">
+                                    <div class="p-3 bg-blue-100 rounded-xl"><i data-lucide="video" class="text-blue-600"></i></div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-slate-900">24</p>
+                                        <p class="text-xs text-slate-500">Videos Watched</p>
+                                    </div>
+                                </div>
+                                <div class="glass-card px-6 py-4 flex items-center gap-4 bg-white">
+                                    <div class="p-3 bg-emerald-100 rounded-xl"><i data-lucide="file-text" class="text-emerald-600"></i></div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-slate-900">12</p>
+                                        <p class="text-xs text-slate-500">Docs Read</p>
+                                    </div>
+                                </div>
+                                <div class="glass-card px-6 py-4 flex items-center gap-4 bg-white">
+                                    <div class="p-3 bg-amber-100 rounded-xl"><i data-lucide="check-circle" class="text-amber-600"></i></div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-slate-900">18</p>
+                                        <p class="text-xs text-slate-500">Tasks Finished</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Background Glow -->
+                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-fuchsia-500/5 blur-[80px] rounded-full"></div>
+                    </div>
+
+                    <!-- Course Selection & Progress -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="glass p-6">
+                            <h3 class="font-bold mb-6 flex items-center gap-2 text-slate-900">
+                                <i data-lucide="layout-grid" class="w-5 h-5 text-fuchsia-500"></i>
+                                Current Course
+                            </h3>
+                            <div class="space-y-6">
+                                <div class="p-4 glass-card border-l-4 border-fuchsia-500 bg-white">
+                                    <p class="text-xs text-fuchsia-600 uppercase font-black">Active Course</p>
+                                    <h4 class="text-lg font-bold text-slate-900">OM-DM1: Digital Marketing Analytics</h4>
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <div class="flex-1 mr-4">
+                                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full fuchsia-gradient" style="width: 84%;"></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm font-bold text-slate-900">84%</span>
+                                    </div>
+                                    <!-- Added Metric -->
+                                    <p class="text-xs text-slate-500 mt-4 font-medium flex items-center gap-1.5">
+                                        <i data-lucide="scroll-text" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        12 course items to Final Assignment
+                                    </p>
+                                </div>
+                                <button class="w-full py-3 glass-card text-sm font-bold flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900">
+                                    Switch Course <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass p-6">
+                            <h3 class="font-bold mb-6 flex items-center gap-2 text-slate-900">
+                                <i data-lucide="award" class="w-5 h-5 text-fuchsia-500"></i>
+                                Grade Breakdown
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-600">Quiz Average (40%)</span>
+                                    <span class="text-lg font-bold text-slate-900">88.5%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-600">Final Project (60%)</span>
+                                    <span class="text-lg font-bold text-fuchsia-600 italic">Pending Grading</span>
+                                </div>
+                                <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                                    <span class="text-sm font-bold text-slate-400 uppercase tracking-tighter">Current Estimate</span>
+                                    <span class="text-3xl font-black text-gradient">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ElevenLabs Voice Agent Column -->
+                <div class="lg:col-span-1">
+                    <div class="glass h-full p-8 flex flex-col items-center justify-center text-center relative overflow-hidden purple-glow bg-white">
+                        <div class="absolute inset-0 bg-gradient-to-b from-fuchsia-50 to-transparent"></div>
+                        
+                        <div class="tutor-ring mb-8">
+                            <div class="w-32 h-32 rounded-full fuchsia-gradient flex items-center justify-center animate-float relative z-10 shadow-xl">
+                                <i data-lucide="mic" class="w-16 h-16 text-white"></i>
+                            </div>
+                        </div>
+
+                        <h2 class="text-2xl font-black mb-2 text-slate-900">AI Course Tutor</h2>
+                        <p class="text-slate-500 text-sm mb-8 leading-relaxed">
+                            Need help with your Analytics assignment? 
+                            I've read all the course materials and transcripts.
+                        </p>
+
+                        <div id="tutor-box" class="w-full glass-card p-4 rounded-2xl mb-6 text-left min-h-[100px] border-slate-100 bg-slate-50/50">
+                            <p class="text-xs text-fuchsia-600 font-bold uppercase mb-2">Live Transcript</p>
+                            <p class="text-sm text-slate-700 italic" id="tutor-status">"Tap the microphone to start our session..."</p>
+                        </div>
+
+                        <button onclick="toggleTutor()" id="tutor-btn" class="w-full py-4 glass-card bg-white border-slate-100 hover:border-fuchsia-300 transition-all font-bold flex items-center justify-center gap-3 text-slate-700">
+                            <span class="w-3 h-3 bg-rose-500 rounded-full animate-pulse"></span>
+                            Start Conversation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBMISSION BOX -->
+            <div id="submission-area" class="glass p-10 border-2 border-dashed border-slate-200 hover:border-fuchsia-400 hover:bg-fuchsia-50/30 transition-all text-center group bg-white">
+                <div class="max-w-md mx-auto">
+                    <div class="mb-6 inline-block p-6 rounded-full bg-slate-50 group-hover:bg-white transition-all">
+                        <i data-lucide="upload-cloud" class="w-12 h-12 text-slate-400 group-hover:text-fuchsia-500 transition-all"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-slate-900">Submit Final Assessment</h3>
+                    <p class="text-slate-500 mb-8">Drag and drop your PDF project file here or click to browse. Ensure it follows the grading rubric.</p>
+                    
+                    <input type="file" id="file-upload" class="hidden" onchange="handleFileUpload(event)">
+                    <label for="file-upload" class="cursor-pointer fuchsia-gradient text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:opacity-90 transition-all inline-block">
+                        Select File
+                    </label>
+                    <p id="file-name" class="mt-4 text-sm font-semibold text-fuchsia-600 hidden"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRADING SECTION (Pathway View) -->
+        <div id="grading-section" class="hidden space-y-10">
+            <div class="flex items-center justify-between">
+                <h2 class="text-3xl font-black text-slate-900">Learning <span class="text-gradient">Pathway Feedback</span></h2>
+                <div class="glass px-6 py-4 flex items-center gap-6 shadow-sm">
+                    <div class="text-center">
+                        <p class="text-[10px] uppercase font-bold text-slate-400">Final Grade</p>
+                        <p class="text-3xl font-black text-fuchsia-600">84.4%</p>
+                    </div>
+                    <div class="w-[1px] h-10 bg-slate-100"></div>
+                    <div class="text-center">
+                        <p class="text-[10px] uppercase font-bold text-slate-400">Letter</p>
+                        <p class="text-3xl font-black text-slate-900">B</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-10">
+                
+                <!-- Main Pathway -->
+                <div class="lg:col-span-2 space-y-12 pl-10 relative">
+                    
+                    <!-- Node 1: Quizzes -->
+                    <div class="relative pathway-node">
+                        <div class="absolute -left-[45px] top-0 w-6 h-6 rounded-full bg-white border-4 border-fuchsia-500 z-10"></div>
+                        <div class="glass p-6">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3 text-slate-900">
+                                <i data-lucide="check-square" class="text-fuchsia-500"></i>
+                                Assessment Phase 1: Knowledge Check
+                            </h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 1</p>
+                                    <p class="font-bold text-slate-900">92%</p>
+                                </div>
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 2</p>
+                                    <p class="font-bold text-slate-900">88%</p>
+                                </div>
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 3</p>
+                                    <p class="font-bold text-slate-900">85%</p>
+                                </div>
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 4</p>
+                                    <p class="font-bold text-slate-900">95%</p>
+                                </div>
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 5</p>
+                                    <p class="font-bold text-slate-900">80%</p>
+                                </div>
+                                <div class="glass-card p-4 text-center bg-white">
+                                    <p class="text-xs text-slate-400 mb-1">Quiz 6</p>
+                                    <p class="font-bold text-slate-900">91%</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center">
+                                <span class="text-sm font-semibold text-slate-600">Average Weight (40%)</span>
+                                <span class="font-bold text-fuchsia-600">35.2 Points</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 2: Project Criteria -->
+                    <div class="relative pathway-node">
+                        <div class="absolute -left-[45px] top-0 w-6 h-6 rounded-full bg-white border-4 border-fuchsia-500 z-10"></div>
+                        <div class="glass p-6">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3 text-slate-900">
+                                <i data-lucide="bar-chart-3" class="text-fuchsia-500"></i>
+                                Assessment Phase 2: Final Implementation
+                            </h4>
+                            <div class="space-y-6 text-slate-900">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-semibold">Application of Concepts</span>
+                                        <span class="text-sm font-bold">22/25</span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                        <div class="h-full bg-purple-500" style="width: 88%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-semibold">Analytical Presentation</span>
+                                        <span class="text-sm font-bold">20/25</span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                        <div class="h-full bg-purple-500" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-semibold">Business Relevance</span>
+                                        <span class="text-sm font-bold">24/25</span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                        <div class="h-full bg-purple-500" style="width: 96%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-semibold">Innovative Thinking</span>
+                                        <span class="text-sm font-bold">16/25</span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                        <div class="h-full bg-purple-500" style="width: 64%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node 3: Feedback -->
+                    <div class="relative pathway-node">
+                        <div class="absolute -left-[45px] top-0 w-6 h-6 rounded-full bg-white border-4 border-fuchsia-500 z-10"></div>
+                        <div class="glass p-6">
+                            <h4 class="text-xl font-bold mb-4 flex items-center gap-3 text-slate-900">
+                                <i data-lucide="message-circle" class="text-fuchsia-500"></i>
+                                AI Mentor Feedback
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl">
+                                    <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Key Strengths</p>
+                                    <p class="text-sm text-slate-700">"Your application of data analytics tools was exemplary. The business relevance section shows a deep understanding of the Barcelona tech market."</p>
+                                </div>
+                                <div class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl">
+                                    <p class="text-xs text-amber-600 font-bold uppercase mb-1">Growth Opportunities</p>
+                                    <p class="text-sm text-slate-700">"Focus more on visual data storytelling in future presentations. The innovative component could be pushed further by exploring AI-predictive models."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Sidebar -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass p-6 sticky top-10 shadow-lg bg-white">
+                        <h4 class="font-bold mb-4 text-slate-900">Official Transcript</h4>
+                        <div class="space-y-3 mb-8">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Student</span>
+                                <span class="font-bold text-slate-900">Zeynep Öztürkmen</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Course Code</span>
+                                <span class="font-bold text-slate-900">OM-DM1</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Term</span>
+                                <span class="font-bold text-slate-900">Fall 2024</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Status</span>
+                                <span class="font-bold text-emerald-600">Validated</span>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full fuchsia-gradient py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 mb-4 shadow-lg shadow-fuchsia-200">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            Download PDF
+                        </button>
+                        <button onclick="showSection('dashboard')" class="w-full glass-card py-4 rounded-xl font-bold text-sm text-slate-600 hover:text-slate-900">
+                            Return to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 glass border-slate-200 px-8 py-4 rounded-2xl z-[200] opacity-0 transition-all pointer-events-none flex items-center gap-3 shadow-2xl bg-white">
+        <i data-lucide="check-circle" class="text-fuchsia-500"></i>
+        <span id="toast-msg" class="text-slate-900 font-semibold">Success!</span>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        let tutorActive = false;
+
+        function handleLogin() {
+            const overlay = document.getElementById('login-overlay');
+            const main = document.getElementById('main-content');
+            
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                main.classList.remove('hidden');
+                main.style.opacity = '0';
+                setTimeout(() => main.style.opacity = '1', 50);
+                showToast("Welcome to ESEI Online!");
+            }, 500);
+        }
+
+        function showSection(sectionId) {
+            const dash = document.getElementById('dashboard-section');
+            const grading = document.getElementById('grading-section');
+            
+            if (sectionId === 'dashboard') {
+                dash.classList.remove('hidden');
+                grading.classList.add('hidden');
+            } else {
+                dash.classList.add('hidden');
+                grading.classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const fileNameElem = document.getElementById('file-name');
+            if (file) {
+                fileNameElem.textContent = `Selected: ${file.name}`;
+                fileNameElem.classList.remove('hidden');
+                showToast("File uploaded! AI grading started.");
+                
+                // Simulate grading delay
+                setTimeout(() => {
+                    showToast("Grading Complete. Pathway Updated.");
+                    showSection('grading');
+                }, 2500);
+            }
+        }
+
+        function toggleTutor() {
+            tutorActive = !tutorActive;
+            const btn = document.getElementById('tutor-btn');
+            const status = document.getElementById('tutor-status');
+            
+            if (tutorActive) {
+                btn.classList.add('fuchsia-gradient');
+                btn.classList.add('text-white');
+                btn.classList.remove('bg-white');
+                btn.innerHTML = `<span class="w-3 h-3 bg-white rounded-full animate-ping"></span> Listening...`;
+                status.innerHTML = `<span class="animate-pulse italic">Thinking... "Sure Zeynep! To calculate your Final Grade estimate, let's look at your Quiz average of 88.5% and apply the 40% weight..."</span>`;
+            } else {
+                btn.classList.remove('fuchsia-gradient');
+                btn.classList.remove('text-white');
+                btn.classList.add('bg-white');
+                btn.innerHTML = `<span class="w-3 h-3 bg-rose-500 rounded-full animate-pulse"></span> Start Conversation`;
+                status.innerHTML = `"Tap the microphone to start our session..."`;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.textContent = msg;
+            toast.style.opacity = '1';
+            toast.style.bottom = '40px';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.bottom = '10px';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
