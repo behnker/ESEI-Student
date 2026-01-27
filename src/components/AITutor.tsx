@@ -10,13 +10,10 @@ export default function AITutor() {
         <div className="glass h-full p-8 flex flex-col items-center justify-center text-center relative overflow-hidden purple-glow bg-white">
             <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-50 to-transparent"></div>
 
-            <div className="tutor-ring mb-8">
-                <div className="w-32 h-32 rounded-full fuchsia-gradient flex items-center justify-center animate-float relative z-10 shadow-xl">
-                    <div className="flex items-center justify-center w-full h-full z-50">
-                        {/* @ts-ignore */}
-                        <elevenlabs-convai agent-id="agent_3001k2eqr5yrfh7t0s9wmt7myhd6"></elevenlabs-convai>
-                    </div>
-                </div>
+            {/* Voice Agent Widget Container */}
+            <div className="mb-8 relative z-20">
+                {/* @ts-ignore */}
+                <elevenlabs-convai agent-id="agent_3001k2eqr5yrfh7t0s9wmt7myhd6"></elevenlabs-convai>
             </div>
 
             <h2 className="text-2xl font-black mb-2 text-slate-900">AI Course Tutor</h2>
