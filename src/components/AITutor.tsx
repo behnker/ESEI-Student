@@ -11,13 +11,14 @@ export default function AITutor() {
         <div className="glass h-full p-8 flex flex-col items-center justify-center text-center relative purple-glow bg-white">
             <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-50 to-transparent"></div>
 
-            <div className="tutor-ring mb-8">
-                {/* Restored the visual ring, but kept overflow visible */}
-                <div className="w-32 h-32 rounded-full fuchsia-gradient flex items-center justify-center animate-float relative z-10 shadow-xl">
-                    <div className="flex items-center justify-center w-full h-full z-50">
-                        {/* @ts-ignore */}
-                        <elevenlabs-convai agent-id="agent_3001k2eqr5yrfh7t0s9wmt7myhd6"></elevenlabs-convai>
-                    </div>
+            <div className="tutor-ring mb-8 relative flex flex-col items-center justify-center animate-float">
+                {/* Decorative Glow completely separate from widget container */}
+                <div className="absolute w-32 h-32 rounded-full fuchsia-gradient blur-2xl opacity-40 pointer-events-none"></div>
+
+                {/* Widget Container - Strict Z-Index Layering */}
+                <div className="relative z-50">
+                    {/* @ts-ignore */}
+                    <elevenlabs-convai agent-id="agent_3001k2eqr5yrfh7t0s9wmt7myhd6"></elevenlabs-convai>
                 </div>
             </div>
 
